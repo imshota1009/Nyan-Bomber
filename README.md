@@ -60,7 +60,7 @@
 ---
 
 ## 📜 ライセンス
-NekoDev Studio (しょーた) のために開発されました。
+NekoDev Studio (しょーた) によって開発されました。
 
 </details>
 
@@ -124,6 +124,6 @@ Boost the garden's regeneration percentage and target a high score!
 ---
 
 ## 📜 License
-Developed for NekoDev Studio (Shota).
+Developed by NekoDev Studio (Shota).
 
 </details>
