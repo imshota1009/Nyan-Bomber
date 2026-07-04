@@ -333,6 +333,20 @@ html,body { width:100%; height:100%; overflow:hidden; background:#87c9ef;
   </div>
 </div>
 
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    projectId: "nyan-bomber-game-app",
+    appId: "1:385591014932:web:ef3311b6d1aa92edc55901",
+    storageBucket: "nyan-bomber-game-app.firebasestorage.app",
+    apiKey: "AIzaSyC2b8rkSFeT13T_bZ51z9mgGhP1b02NAn0",
+    authDomain: "nyan-bomber-game-app.firebaseapp.com",
+    messagingSenderId: "385591014932"
+  });
+</script>
+
 <script>
 /**
  * @license
@@ -2762,6 +2776,9 @@ function stageClear(){
   if(G.stage>=5){ SAVE.charClears[P.catKey]=true; persist(); }
   checkRankAchievements();
   showClearScreen(rank,timeBonus,regenBonus,isNew);
+
+  // Firebaseへプレイデータを保存
+  savePlaySession(G.stage, rank, G.score, G.timeLeft);
 }
 function gameOver(title,msg){
   if(G.state==='over') return;
@@ -2953,6 +2970,35 @@ if(typeof THREE==='undefined'){
   initThree();
   titleSetup();
   requestAnimationFrame(tick);
+}
+
+/* ---------------- Firebase functions ---------------- */
+function savePlaySession(stage, rank, score, timeLeft) {
+  try {
+    if (typeof firebase !== 'undefined') {
+      const db = firebase.firestore();
+      db.collection('play_sessions').add({
+        stage: stage,
+        rank: rank,
+        score: score,
+        timeLeft: timeLeft,
+        catKey: P.catKey,
+        catName: P.def.name,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        userId: getOrCreateUserId()
+      });
+    }
+  } catch (e) {
+    console.error("Firebase save error:", e);
+  }
+}
+
+function getOrCreateUserId() {
+  if (!SAVE.userId) {
+    SAVE.userId = 'user_' + Math.random().toString(36).substring(2, 15);
+    persist();
+  }
+  return SAVE.userId;
 }
 
 </script>

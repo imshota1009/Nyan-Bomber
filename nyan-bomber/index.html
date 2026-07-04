@@ -179,6 +179,21 @@ window.addEventListener('error',function(e){
 if(typeof THREE==='undefined')
   document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
 </script>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    projectId: "nyan-bomber-game-app",
+    appId: "1:385591014932:web:ef3311b6d1aa92edc55901",
+    storageBucket: "nyan-bomber-game-app.firebasestorage.app",
+    apiKey: "AIzaSyC2b8rkSFeT13T_bZ51z9mgGhP1b02NAn0",
+    authDomain: "nyan-bomber-game-app.firebaseapp.com",
+    messagingSenderId: "385591014932"
+  });
+</script>
+
 <script src="game/core.js"></script>
 <script src="game/audio.js"></script>
 <script src="game/fx.js"></script>

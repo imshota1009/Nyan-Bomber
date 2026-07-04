@@ -120,9 +120,54 @@ function unlockAch(id){
     setTimeout(()=>showToast('❄ 隠しキャラ「白猫のゆき」がなかまになった！'),1200);
   }
 }
+function stageClear(){
+  G.state='result';
+  const timeBonus=Math.max(0,Math.round(G.timeLeft))*10;
+  const regenBonus=regenPct()*5;
+  G.score+=timeBonus+regenBonus;
+  const rank=calcRank();
+  if(rank==='S') unlockAch('rankS');
+  if(!G.tookDamage) unlockAch('nodmg');
+  const isNew=saveRecord(G.stage,rank,G.score);
+  if(G.stage>=5){ SAVE.charClears[P.catKey]=true; persist(); }
+  checkRankAchievements();
+  showClearScreen(rank,timeBonus,regenBonus,isNew);
+
+  // Firebaseへプレイデータを保存
+  savePlaySession(G.stage, rank, G.score, G.timeLeft);
+}
 function checkRankAchievements(){
   const done=[1,2,3,4,5].every(n=>SAVE.records['s'+n]);
   if(done) unlockAch('allclear');
   if([1,2,3,4,5].every(n=>SAVE.records['s'+n]&&SAVE.records['s'+n].rank==='S')) unlockAch('allS');
   if(['anzu','kuromame','mofuko'].every(c=>SAVE.charClears[c])) unlockAch('allcats');
+}
+
+/* ---------------- Firebase functions ---------------- */
+function savePlaySession(stage, rank, score, timeLeft) {
+  try {
+    if (typeof firebase !== 'undefined') {
+      const db = firebase.firestore();
+      db.collection('play_sessions').add({
+        stage: stage,
+        rank: rank,
+        score: score,
+        timeLeft: timeLeft,
+        catKey: P.catKey,
+        catName: P.def.name,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        userId: getOrCreateUserId()
+      });
+    }
+  } catch (e) {
+    console.error("Firebase save error:", e);
+  }
+}
+
+function getOrCreateUserId() {
+  if (!SAVE.userId) {
+    SAVE.userId = 'user_' + Math.random().toString(36).substring(2, 15);
+    persist();
+  }
+  return SAVE.userId;
 }
