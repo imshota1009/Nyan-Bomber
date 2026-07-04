@@ -7,6 +7,8 @@
 
 **ネコを操作して種爆弾を仕掛け、害獣を退治しながら庭園に花を咲かせる3Dアクションゲーム！**
 
+🚀 **ゲームを遊ぶ (Play Live):** [https://nyan-bomber-game-app.web.app](https://nyan-bomber-game-app.web.app)
+
 ---
 
 ## 🎮 ゲームについて
@@ -70,6 +72,8 @@ NekoDev Studio (しょーた) によって開発されました。
 # 🐱 Nyan Bomber: Paw & Seed Bomb Garden War 💣🌸
 
 **Control your cat, place seed bombs, defeat garden pests, and bring the garden back to full bloom in this 3D action game!**
+
+🚀 **Play Live:** [https://nyan-bomber-game-app.web.app](https://nyan-bomber-game-app.web.app)
 
 ---
 
