@@ -7,7 +7,7 @@ function initBoss(){
   const mesh=makeBoss();
   mesh.scale.setScalar(1.4);
   boardGroup.add(mesh);
-  BOSS={ hp:10, maxHp:10, shield:2, state:'move', t:0, atkT:3,
+  BOSS={ hp:8, maxHp:8, shield:2, state:'move', t:0, atkT:4,
     x:7, z:2, tx:7, tz:2, mesh, vulnT:0, warnMk:null, hitCd:0, anim:0, dead:false };
   mesh.position.set(W(7),0,Z(2));
   $('#bossBox').classList.remove('hidden');
@@ -39,7 +39,7 @@ function bossBlastHit(c,r){
     for(const s of sh) s.visible=BOSS.shield>0||false;
     if(BOSS.shield===1) sh[2].visible=false;
     if(BOSS.shield<=0){
-      BOSS.vulnT=5; BOSS.state='stun';
+      BOSS.vulnT=6.5; BOSS.state='stun';
       popup(W(BOSS.x),2.2,Z(BOSS.z),'いまだ！弱点をねらえ！','gold');
       sfx.warn();
     }
@@ -93,7 +93,7 @@ function updateBoss(dt){
     m.rotation.y=Math.atan2(P.x-BOSS.x,P.z-BOSS.z)*.3;
     BOSS.atkT-=dt;
     if(BOSS.atkT<=0){
-      BOSS.atkT=rnd(4,6);
+      BOSS.atkT=rnd(6,8);
       const roll=Math.random();
       if(roll<.4) bossBurrowAttack();
       else if(roll<.75) bossVolley();
@@ -135,7 +135,7 @@ function updateBoss(dt){
   }
   m.userData.weak.visible=BOSS.vulnT>0;
   // 接触ダメージ
-  if(P.alive&&P.inv<=0&&BOSS.state!=='burrow'&&Math.abs(BOSS.x-P.x)<.95&&Math.abs(BOSS.z-P.z)<.95) hurtPlayer();
+  if(P.alive&&P.inv<=0&&BOSS.state!=='burrow'&&Math.abs(BOSS.x-P.x)<.85&&Math.abs(BOSS.z-P.z)<.85) hurtPlayer();
 }
 function bossBurrowAttack(){
   BOSS.state='burrow'; BOSS.burT=0; BOSS.lockPos=null;
@@ -144,7 +144,7 @@ function bossBurrowAttack(){
 }
 function bossVolley(){
   sfx.caw(); sfx.warn();
-  for(let i=0;i<4;i++){
+  for(let i=0;i<3;i++){
     const tc=clamp(Math.round(P.x)+rndi(-2,2),1,COLS-2);
     const tr=clamp(Math.round(P.z)+rndi(-2,2),1,ROWS-2);
     spawnMarker(tc,tr,1.1,true);

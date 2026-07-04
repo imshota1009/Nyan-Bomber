@@ -211,7 +211,7 @@ function spawnPower(c,r,forceType){
   if(!type){
     const roll=Math.random();
     type= roll<.2?'bomb': roll<.4?'range': roll<.56?'speed': roll<.7?'vine':
-          roll<.82?'heal': roll<.93?'fert':'paw';
+          roll<.84?'heal': roll<.94?'fert':'paw';
   }
   const mat=new THREE.SpriteMaterial({map:POWER_DEFS[type].tex,transparent:true});
   const s=new THREE.Sprite(mat);

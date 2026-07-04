@@ -3,7 +3,7 @@
    ui.js — HUD, screens, select, opening, toasts, results
    ============================================================ */
 function hideAllScreens(){
-  for(const id of ['title','opening','howto','select','pause','clear','gameover','ending','final'])
+  for(const id of ['title','opening','howto','select','pause','clear','gameover','ending','final','confirmNew'])
     $('#'+id).classList.add('hidden');
   $('#tutMsg').classList.add('hidden');
 }
@@ -40,6 +40,8 @@ function updateHUD(){
   bar.classList.toggle('alert',alert);
   $('#scoreChip').textContent='★ '+G.score;
   $('#regenChip').textContent='🌷 再生度 '+regenPct()+'%';
+  const left=enemies.filter(e=>e.state!=='fly').length+spawnQueue.length+(BOSS&&!BOSS.dead?1:0);
+  $('#enemyChip').textContent= BOSS? ('🐾 ボス'+(left>1?' +'+(left-1):'')) : ('🐾 のこり '+left+'匹');
   let st=`🌰${P.bombMax-P.active}/${P.bombMax} 🌸${P.range} 👟${P.speedLv+1} 🌿${P.vines}`;
   if(P.pawNext) st+=' 🐾!';
   if(G.fert>0) st+=` ✨${Math.ceil(G.fert)}`;
@@ -158,8 +160,8 @@ const RANK_WORDS={ S:'伝説の花咲かネコ！ノーダメージ完全勝利�
   B:'よくがんばりました！', C:'ギリギリセーフ…おひるね多め？' };
 function calcRank(){
   const allKill=!G.gateExit;
-  if(allKill&&G.timeLeft>=30&&!G.tookDamage) return 'S';
-  if(allKill&&G.timeLeft>=15) return 'A';
+  if(allKill&&G.timeLeft>=G.timeLimit*0.5&&!G.tookDamage) return 'S';
+  if(allKill&&G.timeLeft>=G.timeLimit*0.25) return 'A';
   if(G.gateExit&&enemies.length>0) return 'C';
   if(G.timeLeft<5) return 'C';
   return 'B';
@@ -208,7 +210,16 @@ function closePause(){
   G.state= TUT? 'tutorial':'play';
 }
 function wireUI(){
-  $('#btnNew').addEventListener('click',()=>{ sfx.nya(); startOpening(); });
+  $('#btnNew').addEventListener('click',()=>{ sfx.nya();
+    if(hasSaveData()) $('#confirmNew').classList.remove('hidden');
+    else startOpening(); });
+  $('#btnWipeYes').addEventListener('click',()=>{ sfx.select();
+    resetSave(); $('#confirmNew').classList.add('hidden');
+    $('#btnCont').disabled=true; startOpening(); });
+  $('#btnWipeCont').addEventListener('click',()=>{ sfx.select();
+    $('#confirmNew').classList.add('hidden'); openSelect(); });
+  $('#btnWipeNo').addEventListener('click',()=>{ sfx.select();
+    $('#confirmNew').classList.add('hidden'); });
   $('#btnCont').addEventListener('click',()=>{ sfx.select(); openSelect(); });
   $('#btnHow').addEventListener('click',()=>{ sfx.select(); hideAllScreens(); $('#howto').classList.remove('hidden'); G.state='howto'; });
   $('#btnHowBack').addEventListener('click',()=>{ sfx.select();
@@ -225,7 +236,7 @@ function wireUI(){
   $('#btnPTitle').addEventListener('click',()=>{ sfx.select(); goTitle(); });
   $('#btnNext').addEventListener('click',()=>{ sfx.select();
     if(G.stage>=5) showFinal();
-    else{ setCat(P.catKey); G.hearts=Math.max(G.hearts,3); startStage(G.stage+1,true); } });
+    else{ setCat(P.catKey); G.hearts=Math.max(G.hearts,4); startStage(G.stage+1,true); } });
   $('#btnRetry').addEventListener('click',()=>{ sfx.select(); retryStage(); });
   $('#btnGoSel').addEventListener('click',()=>{ sfx.select(); openSelect(); });
   $('#btnFinSel').addEventListener('click',()=>{ sfx.select(); openSelect(); });

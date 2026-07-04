@@ -3,15 +3,15 @@
    stage.js — stage data, map generation, seasonal gimmicks
    ============================================================ */
 const STAGES={
-  1:{ name:'春のはじまり花壇', time:60, bg:0x9fd9f6, fog:0xaee2f8, sun:0xfff2d8, hemi:0x77a868,
-      roster:['mole','mole','mole','mole','mole'], soft:.42, bgm:'s1' },
-  2:{ name:'夏の恵み菜園', time:60, bg:0x8fd8f8, fog:0xa8e8f8, sun:0xfff8c8, hemi:0x68b868,
-      roster:['mole','mole','crow','mole','crow','crow','mole'], soft:.4, water:true, bgm:'s2' },
-  3:{ name:'秋の落ち葉庭', time:60, bg:0xf6bd8a, fog:0xf8cd9e, sun:0xffc98a, hemi:0x9a7858,
-      roster:['mole','mole','slug','crow','slug','mole','slug','crow'], soft:.4, leaves:true, windOn:true, bgm:'s3' },
-  4:{ name:'冬のあたたか温室', time:60, bg:0xcfe4f2, fog:0xdff0f8, sun:0xe8f0ff, hemi:0x8a9aa8,
-      roster:['mole','crow','slug','hedgehog','mole','crow','hedgehog','slug','mole'], soft:.38, ice:true, narrow:true, bgm:'s4' },
-  5:{ name:'けっせん！ボスの庭', time:90, bg:0x5a6aa8, fog:0x6a7ab8, sun:0xaab8e8, hemi:0x4a5a6a,
+  1:{ name:'春のはじまり花壇', time:120, bg:0x9fd9f6, fog:0xaee2f8, sun:0xfff2d8, hemi:0x77a868,
+      roster:['mole','mole','mole','mole'], soft:.42, bgm:'s1' },
+  2:{ name:'夏の恵み菜園', time:120, bg:0x8fd8f8, fog:0xa8e8f8, sun:0xfff8c8, hemi:0x68b868,
+      roster:['mole','mole','crow','mole','crow'], soft:.4, water:true, bgm:'s2' },
+  3:{ name:'秋の落ち葉庭', time:120, bg:0xf6bd8a, fog:0xf8cd9e, sun:0xffc98a, hemi:0x9a7858,
+      roster:['mole','slug','crow','mole','slug','crow'], soft:.4, leaves:true, windOn:true, bgm:'s3' },
+  4:{ name:'冬のあたたか温室', time:120, bg:0xcfe4f2, fog:0xdff0f8, sun:0xe8f0ff, hemi:0x8a9aa8,
+      roster:['mole','crow','slug','hedgehog','mole','crow','slug'], soft:.38, ice:true, narrow:true, bgm:'s4' },
+  5:{ name:'けっせん！ボスの庭', time:150, bg:0x5a6aa8, fog:0x6a7ab8, sun:0xaab8e8, hemi:0x4a5a6a,
       roster:[], soft:.3, boss:true, bgm:'s5' },
 };
 
@@ -178,8 +178,8 @@ function buildStage(n){
 
   /* enemies */
   st.roster.forEach((tp,i)=>{
-    if(i<4) spawnEnemy(tp);
-    else spawnQueue.push({t:2.5+(i-3)*3.4, type:tp});
+    if(i<3) spawnEnemy(tp);
+    else spawnQueue.push({t:6+(i-2)*6, type:tp});
   });
   if(st.boss) initBoss();
 
@@ -209,7 +209,7 @@ function destroySoft(c,r){
     boardGroup.add(gate.mesh);
     sfx.gateOpen();
     popup(W(c),1.2,Z(r),'でぐちゲート！','item');
-  }else if(Math.random()<.3){
+  }else if(Math.random()<.5){
     later(.05,()=>spawnPower(c,r));
   }
 }

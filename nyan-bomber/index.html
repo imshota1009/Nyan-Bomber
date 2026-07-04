@@ -25,7 +25,10 @@ window.addEventListener('error',function(e){
 <div id="game"></div>
 
 <div id="hud" class="hidden">
-  <div id="hudTL"><div class="chip" id="hearts">❤❤❤</div></div>
+  <div id="hudTL">
+    <div class="chip" id="hearts">❤❤❤</div>
+    <div class="chip" id="enemyChip">🐾 のこり 0匹</div>
+  </div>
   <div id="hudTR">
     <div class="chip timerchip"><span id="timeNum">60</span><div id="timeBarBox"><i id="timeBar"></i></div></div>
   </div>
@@ -154,6 +157,20 @@ window.addEventListener('error',function(e){
       <button class="btn" id="btnFinSel">ステージ選択へ</button>
       <button class="btn gray" id="btnFinTitle">タイトルへ</button>
     </div>
+  </div>
+</div>
+
+<div id="confirmNew" class="scr hidden" style="background:rgba(40,30,30,.45);">
+  <div class="panelbg">
+    <div class="resTitle" style="color:#e0558a;font-size:30px;">さいしょから はじめる？</div>
+    <div style="font-size:14px;font-weight:800;color:#6b5b4a;text-align:center;line-height:1.9;">
+      セーブデータ（クリア記録・実績・かくしキャラ）が見つかりました。<br>
+      「さいしょから」を選ぶと <b style="color:#e05050;">セーブデータは消去</b> されます。よろしいですか？</div>
+    <div class="btnrow">
+      <button class="btn gray" id="btnWipeYes">さいしょから（消去する）</button>
+      <button class="btn green" id="btnWipeCont">つづきから あそぶ</button>
+    </div>
+    <button class="btn blue" id="btnWipeNo">キャンセル</button>
   </div>
 </div>
 

@@ -3,11 +3,23 @@
    enemy.js — 害獣軍団AI（モグラ/カラス/ナメクジ/ハリネズミ）
    ============================================================ */
 const ENEMY_DEFS={
-  mole:     { speed:1.6,  hp:1, make:makeMole,     fly:false },
-  crow:     { speed:2.2,  hp:2, make:makeCrow,     fly:true  },
-  slug:     { speed:0.85, hp:1, make:makeSlug,     fly:false },
-  hedgehog: { speed:1.15, hp:3, make:makeHedgehog, fly:false },
+  mole:     { speed:1.15,  hp:1, make:makeMole,     fly:false },
+  crow:     { speed:1.65,  hp:2, make:makeCrow,     fly:true  },
+  slug:     { speed:0.75, hp:1, make:makeSlug,     fly:false },
+  hedgehog: { speed:0.95, hp:3, make:makeHedgehog, fly:false },
 };
+/* モグラの再登場はプレイヤーの近く（追いかけ回さなくて済むように） */
+function findCellNearPlayer(){
+  for(let i=0;i<120;i++){
+    const c=clamp(Math.round(P.x)+rndi(-5,5),1,COLS-2), r=clamp(Math.round(P.z)+rndi(-5,5),1,ROWS-2);
+    const k=K(c,r);
+    if(grid[k]!==0||bombMap.has(k)||terra[k]===1) continue;
+    const d=Math.abs(c-P.x)+Math.abs(r-P.z);
+    if(d<2.5||d>7) continue;
+    return {c,r};
+  }
+  return null;
+}
 function findSpawnCell(minDist){
   for(let i=0;i<250;i++){
     const c=rndi(1,COLS-2), r=rndi(1,ROWS-2);
@@ -24,13 +36,13 @@ function spawnEnemy(type,slow){
   const def=ENEMY_DEFS[type];
   const mesh=def.make(); boardGroup.add(mesh);
   mesh.position.set(W(cell.c),0,Z(cell.r));
-  const e={ type, fly:def.fly, hp:def.hp, speed:def.speed*(slow?.5:1)*(1+.08*(G.stage-1)),
+  const e={ type, fly:def.fly, hp:def.hp, speed:def.speed*(slow?.5:1)*(1+.03*(G.stage-1)),
     x:cell.c, z:cell.r, fx:cell.c, fz:cell.r, tx:cell.c, tz:cell.r, prog:1, yaw:0,
     state:'walk', spawnT:.6, trapT:0, hitCd:0, frozen:0, iceCube:null,
-    digT:type==='mole'?rnd(5,9):1e9,
+    digT:type==='mole'?rnd(12,18):1e9,
     barrier:type==='slug',
-    throwT:type==='crow'?rnd(3,5):1e9,
-    chargeT:type==='hedgehog'?rnd(3.5,5.5):1e9, chargeDir:null, stunT:0,
+    throwT:type==='crow'?rnd(4.5,7):1e9,
+    chargeT:type==='hedgehog'?rnd(5,7):1e9, chargeDir:null, stunT:0,
     mesh, anim:rnd(TAU), vy:0, vx:0, vz:0, flyT:0, spinX:0, spinZ:0 };
   if(type!=='slug'&&mesh.userData.barrier) mesh.userData.barrier.visible=false;
   enemies.push(e);
@@ -56,8 +68,8 @@ function chooseDir(e){
     if(!passableE(e,cx+dx,cz+dz)) continue;
     let w=1;
     if(dx===Math.sign(e.tx-e.fx)&&dz===Math.sign(e.tz-e.fz)&&(dx||dz)) w+=2.2;
-    if(Math.sign(P.x-cx)===Math.sign(dx)&&dx!==0) w+=1.5;
-    if(Math.sign(P.z-cz)===Math.sign(dz)&&dz!==0) w+=1.5;
+    if(Math.sign(P.x-cx)===Math.sign(dx)&&dx!==0) w+=1.1;
+    if(Math.sign(P.z-cz)===Math.sign(dz)&&dz!==0) w+=1.1;
     if(dx===Math.round(e.fx-e.tx)&&dz===Math.round(e.fz-e.tz)) w*=.15;
     cand.push({dx,dz,w});
   }
@@ -157,11 +169,11 @@ function updateEnemies(dt){
       e.burT+=dt;
       if(e.burT<.4) e.mesh.position.y=-2.2*e.burT;
       else if(e.burT<.55){ if(!e.tele){ e.tele=true;
-        const cell=findSpawnCell(2.5);
+        const cell=findCellNearPlayer()||findSpawnCell(2.5);
         if(cell){ e.x=e.fx=e.tx=cell.c; e.z=e.fz=e.tz=cell.r; e.prog=1;
           e.mesh.position.x=W(cell.c); e.mesh.position.z=Z(cell.r); dirtBurst(cell.c,cell.r,7); sfx.dig(); } } }
       else if(e.burT<.95) e.mesh.position.y=-.88+2.2*(e.burT-.55);
-      else{ e.mesh.position.y=0; e.state='walk'; e.digT=rnd(6,10); }
+      else{ e.mesh.position.y=0; e.state='walk'; e.digT=rnd(14,20); }
     }
     else if(e.state==='telegraph'){                    // ハリネズミ予備動作
       e.teleT-=dt;
@@ -171,7 +183,7 @@ function updateEnemies(dt){
     }
     else if(e.state==='charge'){                       // ハリネズミ突進
       const d=e.chargeDir;
-      const nx=e.x+d.x*5*dt, nz=e.z+d.z*5*dt;
+      const nx=e.x+d.x*4.2*dt, nz=e.z+d.z*4.2*dt;
       const ac=Math.round(nx+d.x*.5), ar=Math.round(nz+d.z*.5);
       if(!passableE(e,ac,ar)&&(Math.abs(ac-Math.round(e.x))+Math.abs(ar-Math.round(e.z))>0)){
         e.state='stun'; e.stunT=1.1;
@@ -188,12 +200,12 @@ function updateEnemies(dt){
     else if(e.state==='stun'){
       e.stunT-=dt;
       e.mesh.rotation.z=Math.sin(e.anim*14)*.25;
-      if(e.stunT<=0){ e.state='walk'; e.mesh.rotation.x=0; e.mesh.rotation.z=0; e.chargeT=rnd(3.5,5.5); }
+      if(e.stunT<=0){ e.state='walk'; e.mesh.rotation.x=0; e.mesh.rotation.z=0; e.chargeT=rnd(5,7); }
     }
     else{ /* walk */
       if(e.type==='crow'){
         e.throwT-=dt;
-        if(e.throwT<=0){ e.throwT=rnd(3.2,5); crowThrow(e); }
+        if(e.throwT<=0){ e.throwT=rnd(4.5,7); crowThrow(e); }
       }
       if(e.type==='hedgehog'){
         e.chargeT-=dt;
@@ -245,7 +257,7 @@ function updateEnemies(dt){
     }
     const harmful=(e.state==='walk'||e.state==='charge')&&e.frozen<=0;
     if(harmful&&e.spawnT<=0&&P.alive&&P.inv<=0){
-      if(Math.abs(e.x-P.x)<.62&&Math.abs(e.z-P.z)<.62) hurtPlayer();
+      if(Math.abs(e.x-P.x)<.56&&Math.abs(e.z-P.z)<.56) hurtPlayer();
     }
   }
 }
@@ -254,9 +266,9 @@ function updateEnemies(dt){
 function crowThrow(e){
   sfx.caw();
   const tc=Math.round(P.x), tr=Math.round(P.z);
-  spawnMarker(tc,tr,.95,true);
+  spawnMarker(tc,tr,1.15,true);
   const mesh=makeAcorn(); boardGroup.add(mesh);
-  projs.push({ mesh, t:0, dur:.95,
+  projs.push({ mesh, t:0, dur:1.15,
     x0:e.x, z0:e.z, x1:tc, z1:tr, boss:false });
 }
 function updateProjectiles(dt){

@@ -70,7 +70,8 @@ html,body { width:100%; height:100%; overflow:hidden; background:#87c9ef;
 .chip { background:rgba(255,255,255,.88); border-radius:999px; padding:5px 14px; font-size:16px;
   color:#5a4a3a; box-shadow:0 3px 8px rgba(40,60,40,.25); white-space:nowrap; }
 .chip.small { font-size:13px; padding:3px 12px; }
-#hudTL { position:absolute; top:10px; left:12px; }
+#hudTL { position:absolute; top:10px; left:12px; display:flex; flex-direction:column; gap:5px; align-items:flex-start; }
+#enemyChip { color:#7a5cb8; font-size:15px; }
 #hearts { color:#ff5f7e; letter-spacing:2px; }
 #hudTR { position:absolute; top:10px; right:12px; }
 .timerchip { display:flex; align-items:center; gap:8px; }

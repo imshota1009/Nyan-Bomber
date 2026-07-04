@@ -103,6 +103,6 @@ function hurtPlayer(){
     P.alive=false; P.deadT=0;
     later(1.2,()=>gameOver('にゃんてこった…','庭は害獣たちに占拠されてしまった。'));
   }else{
-    P.inv=1.5;                                        // 無敵1.5秒（spec 3.1）
+    P.inv=2.0;                                        // 無敵時間（やさしめ調整）
   }
 }

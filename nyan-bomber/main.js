@@ -82,7 +82,7 @@ function goTitle(){
 let introT=0, wonT=0, endT=0, endLineIdx=0, lastAlertSec=-1;
 function startRun(n){
   setCat(SAVE.selCat||'anzu');
-  G.score=0; G.hearts=3;
+  G.score=0; G.hearts=4;
   startStage(n,false);
 }
 function startStage(n,keepStats){
@@ -98,7 +98,7 @@ function retryStage(){
   const s=G.snapshot;
   if(s){ G.score=s.score; P.bombMax=s.bombMax; P.range=s.range; P.speedLv=s.speedLv;
     P.vines=s.vines; P.pawNext=s.pawNext; }
-  G.hearts=3;
+  G.hearts=4;
   startStage(G.stage,true);
 }
 function winStage(){
@@ -207,6 +207,14 @@ function step(dt,active){
   if(G.state==='play'&&gate.revealed) updateGate(dt);
   for(const [k,t1] of blastMap) if(t1<G.t-.1) blastMap.delete(k);
   if(G.comboT>0){ G.comboT-=dt; if(G.comboT<=0) G.chainNow=1; }
+  /* 最後の1匹は場所をピンで教える */
+  if(active&&!BOSS&&spawnQueue.length===0){
+    const alive=enemies.filter(e=>e.state!=='fly');
+    if(alive.length===1){
+      G.pingT=(G.pingT||0)-dt;
+      if(G.pingT<=0){ G.pingT=1.2; spawnMarker(Math.round(alive[0].x),Math.round(alive[0].z),.9,false); }
+    }
+  }
   updateHUD();
   if(active&&P.alive&&!BOSS&&enemies.length===0&&spawnQueue.length===0&&G.state==='play'){
     winStage();
@@ -241,7 +249,7 @@ function tick(ts){
   switch(G.state){
     case 'title':
       titleAnim(dt);
-      if(jp.has('E')) startOpening();
+      if(jp.has('E')) $('#btnNew').click();
       break;
     case 'opening':
       if(jp.has('B')||jp.has('E')) advanceOpening();

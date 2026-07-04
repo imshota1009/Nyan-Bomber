@@ -86,6 +86,17 @@ function loadSave(){
 const SAVE=loadSave();
 function persist(){ try{ localStorage.setItem('NB_SAVE',JSON.stringify(SAVE)); }catch(e){} }
 
+function hasSaveData(){
+  return SAVE.unlocked>1||SAVE.tutorialDone||Object.keys(SAVE.records).length>0||Object.keys(SAVE.ach).length>0;
+}
+function resetSave(){
+  const keep={volBGM:SAVE.volBGM, volSE:SAVE.volSE};
+  for(const k of Object.keys(SAVE)) delete SAVE[k];
+  Object.assign(SAVE,{ unlocked:1, seenOp:false, tutorialDone:false, records:{}, ach:{},
+    vineCatch:0, charClears:{}, yuki:false, selCat:'anzu' }, keep);
+  persist();
+}
+
 /* ---------------- achievements (spec 7) ---------------- */
 const ACH_DEFS=[
   {id:'bloom1',   name:'初めての開花'},
